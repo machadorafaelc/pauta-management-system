@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { PedidoInsercao } from "./types/pauta";
-import { mockPedidos } from "./data/mockData";
+import { pautaService } from "./services/pautaService";
 import { PautaTable } from "./components/PautaTable";
 import { PautaFilters } from "./components/PautaFilters";
 import { PautaDetailsDialog } from "./components/PautaDetailsDialog";
@@ -14,7 +14,8 @@ import { PautaImportDialog } from "./components/PautaImportDialog";
 import { toast } from "sonner";
 
 export default function App() {
-  const [pedidos, setPedidos] = useState<PedidoInsercao[]>(mockPedidos);
+  const [pedidos, setPedidos] = useState<PedidoInsercao[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [responsavelFilter, setResponsavelFilter] = useState("all");
@@ -25,6 +26,24 @@ export default function App() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+
+  // Carregar dados do Supabase
+  useEffect(() => {
+    loadPedidos();
+  }, []);
+
+  const loadPedidos = async () => {
+    try {
+      setLoading(true);
+      const data = await pautaService.getAll();
+      setPedidos(data);
+    } catch (error) {
+      console.error('Erro ao carregar pedidos:', error);
+      toast.error('Erro ao carregar pedidos');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredPedidos = useMemo(() => {
     return pedidos.filter((pedido) => {
@@ -63,21 +82,39 @@ export default function App() {
     setIsEditDialogOpen(true);
   };
 
-  const handleSave = (updatedPedido: PedidoInsercao) => {
-    setPedidos(pedidos.map(p => 
-      p.ID_PI === updatedPedido.ID_PI ? updatedPedido : p
-    ));
-    toast.success("PI atualizado com sucesso!");
+  const handleSave = async (updatedPedido: PedidoInsercao) => {
+    try {
+      await pautaService.update(updatedPedido.ID_PI, updatedPedido);
+      setPedidos(pedidos.map(p => 
+        p.ID_PI === updatedPedido.ID_PI ? updatedPedido : p
+      ));
+      toast.success("PI atualizado com sucesso!");
+    } catch (error) {
+      console.error('Erro ao atualizar PI:', error);
+      toast.error('Erro ao atualizar PI');
+    }
   };
 
-  const handleCreate = (newPedido: PedidoInsercao) => {
-    setPedidos([newPedido, ...pedidos]);
-    toast.success("PI criado com sucesso!");
+  const handleCreate = async (newPedido: PedidoInsercao) => {
+    try {
+      const created = await pautaService.create(newPedido);
+      setPedidos([created, ...pedidos]);
+      toast.success("PI criado com sucesso!");
+    } catch (error) {
+      console.error('Erro ao criar PI:', error);
+      toast.error('Erro ao criar PI');
+    }
   };
 
-  const handleImport = (importedPedidos: PedidoInsercao[]) => {
-    setPedidos([...importedPedidos, ...pedidos]);
-    toast.success(`${importedPedidos.length} PI(s) importado(s) com sucesso!`);
+  const handleImport = async (importedPedidos: PedidoInsercao[]) => {
+    try {
+      const imported = await pautaService.importMany(importedPedidos);
+      setPedidos([...imported, ...pedidos]);
+      toast.success(`${imported.length} PI(s) importado(s) com sucesso!`);
+    } catch (error) {
+      console.error('Erro ao importar PIs:', error);
+      toast.error('Erro ao importar PIs');
+    }
   };
 
   const handleExport = () => {
