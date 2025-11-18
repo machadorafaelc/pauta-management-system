@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { PedidoInsercao } from "../types/pauta";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { Eye, Pencil, Save, X } from "lucide-react";
 import { pautaService } from "../services/pautaService";
+import { StickyScrollbar } from "./StickyScrollbar";
 
 interface PautaTableProps {
   pedidos: PedidoInsercao[];
@@ -17,6 +18,7 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<Partial<PedidoInsercao>>({});
   const editingDataRef = useRef<Partial<PedidoInsercao>>({});
+  const tableContainerRef = useRef<HTMLDivElement>(null);
   
   // Manter ref sincronizada com o estado
   useEffect(() => {
@@ -119,8 +121,13 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
   };
 
   return (
-    <div className="rounded-lg border bg-white overflow-hidden relative">
-      <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)]" id="table-scroll-container">
+    <>
+      <div className="rounded-lg border bg-white overflow-hidden relative">
+        <div 
+          ref={tableContainerRef}
+          className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)]" 
+          id="table-scroll-container"
+        >
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b sticky top-0">
             <tr>
@@ -226,11 +233,13 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
           </tbody>
         </table>
       </div>
-      {pedidos.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
-          Nenhum pedido encontrado
-        </div>
-      )}
-    </div>
+        {pedidos.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            Nenhum pedido encontrado
+          </div>
+        )}
+      </div>
+      <StickyScrollbar targetRef={tableContainerRef} />
+    </>
   );
 }
