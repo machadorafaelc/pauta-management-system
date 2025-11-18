@@ -174,27 +174,7 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
               <th className="px-3 py-2 text-left bg-gray-50">Detalhamento</th>
               <th className="px-3 py-2 text-left bg-gray-50">Relatório Comprovação</th>
               <th className="px-3 py-2 text-left bg-gray-50">Ocorrência Enviada</th>
-              <th className="px-3 py-2 text-left bg-gray-50">
-                <div className="flex items-center gap-2">
-                  <span>Status Mídia</span>
-                  <select
-                    value={statusMidiaFilter}
-                    onChange={(e) => setStatusMidiaFilter(e.target.value)}
-                    className="text-xs border rounded px-1 py-0.5 bg-white"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <option value="all">Todos</option>
-                    <option value="Checking: Em Análise">Checking: Em Análise</option>
-                    <option value="Pendente: Veículo">Pendente: Veículo</option>
-                    <option value="Pendente: Mídia">Pendente: Mídia</option>
-                    <option value="Pendente: Fiscalizadora">Pendente: Fiscalizadora</option>
-                    <option value="Cliente: Aguardando Conformidade">Cliente: Aguardando Conformidade</option>
-                    <option value="FATURADO">FATURADO</option>
-                    <option value="PI CANCELADO">PI CANCELADO</option>
-                    <option value="Aprovado">Aprovado</option>
-                  </select>
-                </div>
-              </th>
+<th className="px-3 py-2 text-left bg-gray-50">Status Mídia</th>
               <th className="px-3 py-2 text-left bg-gray-50">Responsável Checking</th>
               <th className="px-3 py-2 text-left bg-gray-50">Data Envio Conformidade</th>
               <th className="px-3 py-2 text-left bg-gray-50">Link Conformidade</th>
