@@ -17,13 +17,7 @@ interface PCTableProps {
 export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<Partial<PedidoCompra>>({});
-  const [statusProducaoFilter, setStatusProducaoFilter] = useState<string>("all");
 
-  // Filtrar pedidos por Status Produção
-  const filteredPedidos = pedidos.filter(pedido => {
-    if (statusProducaoFilter === "all") return true;
-    return pedido.STATUS_PRODUCAO === statusProducaoFilter;
-  });
 
 
   const formatCurrency = (value: number) => {
@@ -75,6 +69,24 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
       return <span>{(pedido[field] as any) || '-'}</span>;
     }
     
+    // Dropdown para Status Produção
+    if (field === 'STATUS_PRODUCAO') {
+      return (
+        <select
+          value={(editingData[field] as any) || ''}
+          onChange={(e) => updateField(field, e.target.value)}
+          className="h-8 text-sm border rounded px-2 w-full"
+        >
+          <option value="">Selecione...</option>
+          <option value="Em Produção">Em Produção</option>
+          <option value="Aguardando Aprovação">Aguardando Aprovação</option>
+          <option value="Aprovado">Aprovado</option>
+          <option value="Finalizado">Finalizado</option>
+          <option value="Cancelado">Cancelado</option>
+        </select>
+      );
+    }
+    
     return (
       <Input
         value={(editingData[field] as any) || ''}
@@ -117,24 +129,7 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
               <th className="px-3 py-2 text-left bg-gray-50">Status</th>
               <th className="px-3 py-2 text-left bg-gray-50">Detalhamento</th>
               <th className="px-3 py-2 text-left bg-gray-50">Ocorrência Enviada</th>
-              <th className="px-3 py-2 text-left bg-gray-50">
-                <div className="flex items-center gap-2">
-                  <span>Status Produção</span>
-                  <select
-                    value={statusProducaoFilter}
-                    onChange={(e) => setStatusProducaoFilter(e.target.value)}
-                    className="text-xs border rounded px-1 py-0.5 bg-white"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <option value="all">Todos</option>
-                    <option value="Em Produção">Em Produção</option>
-                    <option value="Aguardando Aprovação">Aguardando Aprovação</option>
-                    <option value="Aprovado">Aprovado</option>
-                    <option value="Finalizado">Finalizado</option>
-                    <option value="Cancelado">Cancelado</option>
-                  </select>
-                </div>
-              </th>
+<th className="px-3 py-2 text-left bg-gray-50">Status Produção</th>
               <th className="px-3 py-2 text-left bg-gray-50">Responsável Checking</th>
               <th className="px-3 py-2 text-left bg-gray-50">Data Envio Conformidade</th>
               <th className="px-3 py-2 text-left bg-gray-50">Link Conformidade</th>
@@ -146,7 +141,7 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
             </tr>
           </thead>
           <tbody>
-            {filteredPedidos.map((pedido) => {
+            {pedidos.map((pedido) => {
               const isEditing = editingId === pedido.ID_PC;
               
               return (
@@ -204,7 +199,7 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
             })}
           </tbody>
         </table>
-        {filteredPedidos.length === 0 && (
+        {pedidos.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             Nenhum pedido encontrado
           </div>

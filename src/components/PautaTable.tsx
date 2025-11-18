@@ -19,13 +19,7 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<Partial<PedidoInsercao>>({});
   const editingDataRef = useRef<Partial<PedidoInsercao>>({});
-  const [statusMidiaFilter, setStatusMidiaFilter] = useState<string>("all");
 
-  // Filtrar pedidos por Status Mídia
-  const filteredPedidos = pedidos.filter(pedido => {
-    if (statusMidiaFilter === "all") return true;
-    return pedido.STATUS_MIDIA === statusMidiaFilter;
-  });
   
   // Manter ref sincronizada com o estado
   useEffect(() => {
@@ -110,6 +104,27 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
       return <span>{(pedido[field] as any) || '-'}</span>;
     }
     
+    // Dropdown para Status Mídia
+    if (field === 'STATUS_MIDIA') {
+      return (
+        <select
+          value={(editingData[field] as any) || ''}
+          onChange={(e) => updateField(field, e.target.value)}
+          className="h-8 text-sm border rounded px-2 w-full"
+        >
+          <option value="">Selecione...</option>
+          <option value="Checking: Em Análise">Checking: Em Análise</option>
+          <option value="Pendente: Veículo">Pendente: Veículo</option>
+          <option value="Pendente: Mídia">Pendente: Mídia</option>
+          <option value="Pendente: Fiscalizadora">Pendente: Fiscalizadora</option>
+          <option value="Cliente: Aguardando Conformidade">Cliente: Aguardando Conformidade</option>
+          <option value="FATURADO">FATURADO</option>
+          <option value="PI CANCELADO">PI CANCELADO</option>
+          <option value="Aprovado">Aprovado</option>
+        </select>
+      );
+    }
+    
     return (
       <Input
         value={(editingData[field] as any) || ''}
@@ -190,7 +205,7 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
             </tr>
           </thead>
           <tbody>
-            {filteredPedidos.map((pedido) => {
+            {pedidos.map((pedido) => {
               const isEditing = editingId === pedido.ID_PI;
               
               return (
