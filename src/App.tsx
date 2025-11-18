@@ -235,6 +235,7 @@ export default function App() {
           pedidos={filteredPedidos}
           onView={handleView}
           onEdit={handleEdit}
+          onUpdate={loadData}
         />
 
         {/* Showing count */}
