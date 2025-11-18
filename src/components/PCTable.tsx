@@ -83,8 +83,8 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
   };
 
   return (
-    <div className="rounded-lg border bg-white overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="rounded-lg border bg-white overflow-hidden relative">
+      <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)]" id="pc-table-scroll-container">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b sticky top-0">
             <tr>

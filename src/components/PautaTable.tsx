@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { PedidoInsercao } from "../types/pauta";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -16,6 +16,12 @@ interface PautaTableProps {
 export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<Partial<PedidoInsercao>>({});
+  const editingDataRef = useRef<Partial<PedidoInsercao>>({});
+  
+  // Manter ref sincronizada com o estado
+  useEffect(() => {
+    editingDataRef.current = editingData;
+  }, [editingData]);
 
   const getStatusColor = (status?: string) => {
     if (!status) return "default";
@@ -62,10 +68,15 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
   };
 
   const saveEditing = async () => {
-    if (!editingId || !editingData) return;
+    if (!editingId) return;
+    
+    // Usar ref para pegar o valor mais recente
+    const dataToSave = editingDataRef.current;
+    
+    if (!dataToSave || Object.keys(dataToSave).length === 0) return;
     
     try {
-      await pautaService.update(editingId, editingData);
+      await pautaService.update(editingId, dataToSave);
       setEditingId(null);
       setEditingData({});
       if (onUpdate) onUpdate();
@@ -76,6 +87,12 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
   };
 
   const updateField = (field: keyof PedidoInsercao, value: any) => {
+    // Atualizar ref diretamente usando Object.assign
+    const newData = Object.assign({}, editingDataRef.current);
+    newData[field] = value;
+    editingDataRef.current = newData;
+    
+    // Atualizar estado para re-render
     setEditingData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -102,8 +119,8 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
   };
 
   return (
-    <div className="rounded-lg border bg-white overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="rounded-lg border bg-white overflow-hidden relative">
+      <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)]" id="table-scroll-container">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b sticky top-0">
             <tr>

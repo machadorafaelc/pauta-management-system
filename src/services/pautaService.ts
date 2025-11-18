@@ -8,8 +8,8 @@ function dbToApp(data: any): PedidoInsercao {
     ID_PI: data.id_pi,
     CLIENTE: data.cliente || '',
     CAMPANHA: data.campanha || '',
-    PERIODO_VEICULACAO: data.periodo || '',
-    DATA_EMISSAO_PI: data.data_emissao || '',
+    PERIODO_VEICULACAO: data.periodo,
+    DATA_EMISSAO_PI: data.data_emissao,
     NUMERO_PI: data.numero_pi?.toString() || '',
     NUMERO_EC: data.numero_ec || '',
     NUMERO_PC: data.numero_pc || '',
@@ -38,29 +38,32 @@ function dbToApp(data: any): PedidoInsercao {
     STATUS_FATURAMENTO: data.status_faturamento || '',
     DETALHAMENTO: data.detalhamento || '',
     RESPONSAVEL_CHECKING: data.responsavel_checking || '',
-    OCORRENCIA_ENVIADA_DIA: data.ocorrencia_enviada_dia || '',
+    OCORRENCIA_ENVIADA_DIA: data.ocorrencia_enviada_dia,
     
     // Comprovação e Conformidade (MANUAL - Colunas S, W, X)
     RELATORIO_COMPROVACAO: data.relatorio_comprovacao || '',
-    DATA_ENVIO_CONFORMIDADE: data.data_envio_conformidade || '',
+    DATA_ENVIO_CONFORMIDADE: data.data_envio_conformidade,
     LINK_CONFORMIDADE: data.link_conformidade || '',
     
     // Dados Financeiros (MANUAL - Colunas Y, Z, AA, AB)
     PAGADORIA_NOTA_VBS: data.nota_vbs || '',
-    DATA_FATURAMENTO_AGENCIA: data.data_faturamento_nf_agencia || '',
-    DATA_RECEBIMENTO_AGENCIA: data.data_recebimento_agencia || '',
-    DATA_REPASSE_FORNECEDOR: data.data_repasse_fornecedor || '',
+    DATA_FATURAMENTO_AGENCIA: data.data_faturamento_nf_agencia,
+    DATA_RECEBIMENTO_AGENCIA: data.data_recebimento_agencia,
+    DATA_REPASSE_FORNECEDOR: data.data_repasse_fornecedor,
   };
 }
 
+// Helper para converter string vazia em null
+const emptyToNull = (value: any) => (value === '' || value === undefined) ? null : value;
+
 // Mapeamento completo: Aplicação -> Banco de Dados
 function appToDb(pedido: Partial<PedidoInsercao>): any {
-  return {
+  const mapped = {
     id_pi: pedido.ID_PI,
     cliente: pedido.CLIENTE,
     campanha: pedido.CAMPANHA,
-    periodo: pedido.PERIODO_VEICULACAO,
-    data_emissao: pedido.DATA_EMISSAO_PI,
+    periodo: emptyToNull(pedido.PERIODO_VEICULACAO),
+    data_emissao: emptyToNull(pedido.DATA_EMISSAO_PI),
     numero_pi: pedido.NUMERO_PI ? parseInt(pedido.NUMERO_PI) : null,
     numero_ec: pedido.NUMERO_EC,
     numero_pc: pedido.NUMERO_PC,
@@ -69,27 +72,29 @@ function appToDb(pedido: Partial<PedidoInsercao>): any {
     praca: pedido.PRACA,
     uf: pedido.UF,
     doac: pedido.DOAC,
-    fornecedor: pedido.FORNECEDOR_PRODUCAO,
-    itens: pedido.ITENS_PRODUCAO,
     valor_liquido: pedido.VALOR_LIQUIDO,
     valor_comissao: pedido.VALOR_COMISSAO,
     valor_bruto: pedido.VALOR_BRUTO,
     status: pedido.STATUS,
     status_geral: pedido.STATUS_GERAL,
     status_midia: pedido.STATUS_MIDIA,
-    status_producao: pedido.STATUS_PRODUCAO,
     status_faturamento: pedido.STATUS_FATURAMENTO,
     detalhamento: pedido.DETALHAMENTO,
     responsavel_checking: pedido.RESPONSAVEL_CHECKING,
-    ocorrencia_enviada_dia: pedido.OCORRENCIA_ENVIADA_DIA,
+    ocorrencia_enviada_dia: emptyToNull(pedido.OCORRENCIA_ENVIADA_DIA),
     relatorio_comprovacao: pedido.RELATORIO_COMPROVACAO,
-    data_envio_conformidade: pedido.DATA_ENVIO_CONFORMIDADE,
+    data_envio_conformidade: emptyToNull(pedido.DATA_ENVIO_CONFORMIDADE),
     link_conformidade: pedido.LINK_CONFORMIDADE,
     nota_vbs: pedido.PAGADORIA_NOTA_VBS,
-    data_faturamento_nf_agencia: pedido.DATA_FATURAMENTO_AGENCIA,
-    data_recebimento_agencia: pedido.DATA_RECEBIMENTO_AGENCIA,
-    data_repasse_fornecedor: pedido.DATA_REPASSE_FORNECEDOR,
+    data_faturamento_nf_agencia: emptyToNull(pedido.DATA_FATURAMENTO_AGENCIA),
+    data_recebimento_agencia: emptyToNull(pedido.DATA_RECEBIMENTO_AGENCIA),
+    data_repasse_fornecedor: emptyToNull(pedido.DATA_REPASSE_FORNECEDOR),
   };
+  
+  // Remover campos undefined para evitar enviar dados desnecessários
+  return Object.fromEntries(
+    Object.entries(mapped).filter(([_, value]) => value !== undefined)
+  );
 }
 
 export const pautaService = {
@@ -126,9 +131,10 @@ export const pautaService = {
   },
 
   async update(id: string, pedido: Partial<PedidoInsercao>): Promise<PedidoInsercao> {
+    const mappedData = appToDb(pedido);
     const { data, error } = await supabase
       .from('pauta_pedidos_insercao')
-      .update(appToDb(pedido))
+      .update(mappedData)
       .eq('id_pi', id)
       .select()
       .single();
