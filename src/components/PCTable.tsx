@@ -4,7 +4,8 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Eye, Pencil, Save, X } from "lucide-react";
 import { pcService } from "../services/pcService";
-import { StickyScrollbar } from "./StickyScrollbar";
+import { DoubleScrollbar } from "./DoubleScrollbar";
+
 
 interface PCTableProps {
   pedidos: PedidoCompra[];
@@ -16,7 +17,7 @@ interface PCTableProps {
 export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<Partial<PedidoCompra>>({});
-  const tableContainerRef = useRef<HTMLDivElement>(null);
+
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -85,13 +86,8 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
   };
 
   return (
-    <>
-      <div className="rounded-lg border bg-white overflow-hidden relative">
-        <div 
-          ref={tableContainerRef}
-          className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)]" 
-          id="pc-table-scroll-container"
-        >
+    <div className="rounded-lg border bg-white overflow-hidden relative">
+      <DoubleScrollbar>
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b sticky top-0">
             <tr>
@@ -184,14 +180,12 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
             })}
           </tbody>
         </table>
-      </div>
         {pedidos.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             Nenhum pedido encontrado
           </div>
         )}
-      </div>
-      <StickyScrollbar targetRef={tableContainerRef} />
-    </>
+      </DoubleScrollbar>
+    </div>
   );
 }
