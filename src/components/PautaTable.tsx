@@ -19,7 +19,13 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<Partial<PedidoInsercao>>({});
   const editingDataRef = useRef<Partial<PedidoInsercao>>({});
+  const [statusMidiaFilter, setStatusMidiaFilter] = useState<string>("all");
 
+  // Filtrar pedidos por Status Mídia
+  const filteredPedidos = pedidos.filter(pedido => {
+    if (statusMidiaFilter === "all") return true;
+    return pedido.STATUS_MIDIA === statusMidiaFilter;
+  });
   
   // Manter ref sincronizada com o estado
   useEffect(() => {
@@ -131,40 +137,60 @@ export function PautaTable({ pedidos, onView, onEdit, onUpdate }: PautaTableProp
               <th className="px-3 py-2 text-left sticky left-0 bg-gray-50 z-10 border-r">Ações</th>
               
               {/* COLUNAS A-P: API VBS (AZUL - Somente Leitura) */}
-              <th className="px-3 py-2 text-left bg-blue-100">A: Cliente</th>
-              <th className="px-3 py-2 text-left bg-blue-100">B: DOAC</th>
-              <th className="px-3 py-2 text-left bg-blue-100">C: Campanha</th>
-              <th className="px-3 py-2 text-left bg-blue-100">D: Meio</th>
-              <th className="px-3 py-2 text-left bg-blue-100">E: Praça</th>
-              <th className="px-3 py-2 text-left bg-blue-100">F: UF</th>
-              <th className="px-3 py-2 text-left bg-blue-100">G: Veículo</th>
-              <th className="px-3 py-2 text-left bg-blue-100">H: Data Emissão</th>
-              <th className="px-3 py-2 text-left bg-blue-100">I: Status Faturamento</th>
-              <th className="px-3 py-2 text-left bg-blue-100">J: Período</th>
-              <th className="px-3 py-2 text-left bg-blue-100">K: Dt. Início Veic.</th>
-              <th className="px-3 py-2 text-left bg-blue-100">L: Dt. Fim Veic.</th>
-              <th className="px-3 py-2 text-left bg-blue-100">M: Líquido</th>
-              <th className="px-3 py-2 text-left bg-blue-100">N: Comissão</th>
-              <th className="px-3 py-2 text-left bg-blue-100">O: Bruto</th>
-              <th className="px-3 py-2 text-left bg-blue-100">P: Nº PI</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Cliente</th>
+              <th className="px-3 py-2 text-left bg-blue-100">DOAC</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Campanha</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Meio</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Praça</th>
+              <th className="px-3 py-2 text-left bg-blue-100">UF</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Veículo</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Data Emissão</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Status Faturamento</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Período</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Dt. Início Veic.</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Dt. Fim Veic.</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Líquido</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Comissão</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Bruto</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Nº PI</th>
               
               {/* COLUNAS Q-AB: MANUAL (BRANCO - Editável) */}
-              <th className="px-3 py-2 text-left bg-gray-50">Q: Status</th>
-              <th className="px-3 py-2 text-left bg-gray-50">R: Detalhamento</th>
-              <th className="px-3 py-2 text-left bg-gray-50">S: Relatório Comprovação</th>
-              <th className="px-3 py-2 text-left bg-gray-50">T: Ocorrência Enviada</th>
-              <th className="px-3 py-2 text-left bg-gray-50">U: Status Mídia</th>
-              <th className="px-3 py-2 text-left bg-gray-50">V: Responsável Checking</th>
-              <th className="px-3 py-2 text-left bg-gray-50">W: Data Envio Conformidade</th>
-              <th className="px-3 py-2 text-left bg-gray-50">X: Link Conformidade</th>
-              <th className="px-3 py-2 text-left bg-gray-50">Y: Pagadoria/Nota VBS</th>
-              <th className="px-3 py-2 text-left bg-gray-50">Z: Data Faturamento Agência</th>
-              <th className="px-3 py-2 text-left bg-gray-50">AA: Data Recebimento Agência</th>
-              <th className="px-3 py-2 text-left bg-gray-50">AB: Data Repasse Fornecedor</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Status</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Detalhamento</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Relatório Comprovação</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Ocorrência Enviada</th>
+              <th className="px-3 py-2 text-left bg-gray-50">
+                <div className="flex items-center gap-2">
+                  <span>Status Mídia</span>
+                  <select
+                    value={statusMidiaFilter}
+                    onChange={(e) => setStatusMidiaFilter(e.target.value)}
+                    className="text-xs border rounded px-1 py-0.5 bg-white"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <option value="all">Todos</option>
+                    <option value="Checking: Em Análise">Checking: Em Análise</option>
+                    <option value="Pendente: Veículo">Pendente: Veículo</option>
+                    <option value="Pendente: Mídia">Pendente: Mídia</option>
+                    <option value="Pendente: Fiscalizadora">Pendente: Fiscalizadora</option>
+                    <option value="Cliente: Aguardando Conformidade">Cliente: Aguardando Conformidade</option>
+                    <option value="FATURADO">FATURADO</option>
+                    <option value="PI CANCELADO">PI CANCELADO</option>
+                    <option value="Aprovado">Aprovado</option>
+                  </select>
+                </div>
+              </th>
+              <th className="px-3 py-2 text-left bg-gray-50">Responsável Checking</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Data Envio Conformidade</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Link Conformidade</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Pagadoria/Nota VBS</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Data Faturamento Agência</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Data Recebimento Agência</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Data Repasse Fornecedor</th>
             </tr>
           </thead>
           <tbody>
-            {pedidos.map((pedido) => {
+            {filteredPedidos.map((pedido) => {
               const isEditing = editingId === pedido.ID_PI;
               
               return (

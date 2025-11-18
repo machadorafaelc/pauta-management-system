@@ -17,6 +17,13 @@ interface PCTableProps {
 export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<Partial<PedidoCompra>>({});
+  const [statusProducaoFilter, setStatusProducaoFilter] = useState<string>("all");
+
+  // Filtrar pedidos por Status Produção
+  const filteredPedidos = pedidos.filter(pedido => {
+    if (statusProducaoFilter === "all") return true;
+    return pedido.STATUS_PRODUCAO === statusProducaoFilter;
+  });
 
 
   const formatCurrency = (value: number) => {
@@ -95,34 +102,51 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
               <th className="px-3 py-2 text-left sticky left-0 bg-gray-50 z-10 border-r">Ações</th>
               
               {/* COLUNAS A-J: API VBS (AZUL - Somente Leitura) */}
-              <th className="px-3 py-2 text-left bg-blue-100">A: Cliente</th>
-              <th className="px-3 py-2 text-left bg-blue-100">B: DOAC</th>
-              <th className="px-3 py-2 text-left bg-blue-100">C: Campanha</th>
-              <th className="px-3 py-2 text-left bg-blue-100">D: Itens</th>
-              <th className="px-3 py-2 text-left bg-blue-100">E: Fornecedor</th>
-              <th className="px-3 py-2 text-left bg-blue-100">F: Status Faturamento</th>
-              <th className="px-3 py-2 text-left bg-blue-100">G: Período</th>
-              <th className="px-3 py-2 text-left bg-blue-100">H: Valor Bruto</th>
-              <th className="px-3 py-2 text-left bg-blue-100">I: Nº EC</th>
-              <th className="px-3 py-2 text-left bg-blue-100">J: Nº PC</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Cliente</th>
+              <th className="px-3 py-2 text-left bg-blue-100">DOAC</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Campanha</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Itens</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Fornecedor</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Status Faturamento</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Período</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Valor Bruto</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Nº EC</th>
+              <th className="px-3 py-2 text-left bg-blue-100">Nº PC</th>
               
               {/* COLUNAS K-V: MANUAL (BRANCO - Editável) */}
-              <th className="px-3 py-2 text-left bg-gray-50">K: Status</th>
-              <th className="px-3 py-2 text-left bg-gray-50">L: Detalhamento</th>
-              <th className="px-3 py-2 text-left bg-gray-50">M: Ocorrência Enviada</th>
-              <th className="px-3 py-2 text-left bg-gray-50">N: Status Produção</th>
-              <th className="px-3 py-2 text-left bg-gray-50">O: Responsável Checking</th>
-              <th className="px-3 py-2 text-left bg-gray-50">P: Data Envio Conformidade</th>
-              <th className="px-3 py-2 text-left bg-gray-50">Q: Link Conformidade</th>
-              <th className="px-3 py-2 text-left bg-gray-50">R: Link Comprovante</th>
-              <th className="px-3 py-2 text-left bg-gray-50">S: Pagadoria/Nota VBS</th>
-              <th className="px-3 py-2 text-left bg-gray-50">T: Data Faturamento Agência</th>
-              <th className="px-3 py-2 text-left bg-gray-50">U: Data Recebimento Agência</th>
-              <th className="px-3 py-2 text-left bg-gray-50">V: Data Repasse Fornecedor</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Status</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Detalhamento</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Ocorrência Enviada</th>
+              <th className="px-3 py-2 text-left bg-gray-50">
+                <div className="flex items-center gap-2">
+                  <span>Status Produção</span>
+                  <select
+                    value={statusProducaoFilter}
+                    onChange={(e) => setStatusProducaoFilter(e.target.value)}
+                    className="text-xs border rounded px-1 py-0.5 bg-white"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <option value="all">Todos</option>
+                    <option value="Em Produção">Em Produção</option>
+                    <option value="Aguardando Aprovação">Aguardando Aprovação</option>
+                    <option value="Aprovado">Aprovado</option>
+                    <option value="Finalizado">Finalizado</option>
+                    <option value="Cancelado">Cancelado</option>
+                  </select>
+                </div>
+              </th>
+              <th className="px-3 py-2 text-left bg-gray-50">Responsável Checking</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Data Envio Conformidade</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Link Conformidade</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Link Comprovante</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Pagadoria/Nota VBS</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Data Faturamento Agência</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Data Recebimento Agência</th>
+              <th className="px-3 py-2 text-left bg-gray-50">Data Repasse Fornecedor</th>
             </tr>
           </thead>
           <tbody>
-            {pedidos.map((pedido) => {
+            {filteredPedidos.map((pedido) => {
               const isEditing = editingId === pedido.ID_PC;
               
               return (
@@ -180,7 +204,7 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
             })}
           </tbody>
         </table>
-        {pedidos.length === 0 && (
+        {filteredPedidos.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             Nenhum pedido encontrado
           </div>
