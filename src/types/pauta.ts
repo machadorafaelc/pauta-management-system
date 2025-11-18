@@ -47,16 +47,17 @@ export interface PedidoInsercao {
   
   // Status e Controle (Manual)
   DOAC?: string;
+  STATUS?: string; // Coluna Q
   STATUS_GERAL?: StatusGeral;
   STATUS_MIDIA?: string;
   STATUS_PRODUCAO?: string;
   STATUS_FATURAMENTO?: StatusFaturamento;
-  DETALHAMENTO_STATUS?: string;
+  DETALHAMENTO?: string; // Coluna R
   RESPONSAVEL_CHECKING?: ResponsavelChecking;
   OCORRENCIA_ENVIADA_DIA?: string;
   
   // Comprovação e Conformidade (Manual)
-  LINK_RELATORIO_COMPROVACAO?: string;
+  RELATORIO_COMPROVACAO?: string; // Coluna S
   DATA_ENVIO_CONFORMIDADE?: string;
   LINK_CONFORMIDADE?: string;
   
