@@ -4,6 +4,7 @@ import { PedidoCompra } from "./types/pc";
 import { pautaService } from "./services/pautaService";
 import { pcService } from "./services/pcService";
 import { PautaTable } from "./components/PautaTable";
+import { PCTable } from "./components/PCTable";
 import { PautaFilters } from "./components/PautaFilters";
 import { PautaDetailsDialog } from "./components/PautaDetailsDialog";
 import { PautaEditDialog } from "./components/PautaEditDialog";
@@ -231,17 +232,31 @@ export default function App() {
         />
 
         {/* Table */}
-        <PautaTable
-          pedidos={filteredPedidos}
-          onView={handleView}
-          onEdit={handleEdit}
-          onUpdate={loadData}
-        />
-
-        {/* Showing count */}
-        <div className="mt-4 text-sm text-gray-600">
-          Mostrando {filteredPedidos.length} de {pedidos.length} pedidos
-        </div>
+        {viewMode === 'pi' ? (
+          <>
+            <PautaTable
+              pedidos={filteredPedidos}
+              onView={handleView}
+              onEdit={handleEdit}
+              onUpdate={loadData}
+            />
+            <div className="mt-4 text-sm text-gray-600">
+              Mostrando {filteredPedidos.length} de {pedidos.length} pedidos
+            </div>
+          </>
+        ) : (
+          <>
+            <PCTable
+              pedidos={pcs}
+              onView={(pc: any) => handleView(pc)}
+              onEdit={(pc: any) => handleEdit(pc)}
+              onUpdate={loadPCs}
+            />
+            <div className="mt-4 text-sm text-gray-600">
+              Mostrando {pcs.length} pedidos de compra
+            </div>
+          </>
+        )}
       </div>
 
       {/* Dialogs */}

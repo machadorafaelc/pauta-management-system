@@ -18,20 +18,20 @@ export interface PedidoCompra {
   // Campos manuais - Produção
   ITENS?: string;
   FORNECEDOR?: string;
+  STATUS?: string;
+  DETALHAMENTO?: string;
+  OCORRENCIA_ENVIADA_DIA?: string;
   STATUS_PRODUCAO?: string;
-  RESPONSAVEL_PRODUCAO?: string;
   
   // Campos manuais - Checking
   RESPONSAVEL_CHECKING?: string;
-  STATUS_GERAL?: string;
-  DETALHAMENTO?: string;
-  OCORRENCIA_ENVIADA_DIA?: string;
   DATA_ENVIO_CONFORMIDADE?: string;
   LINK_CONFORMIDADE?: string;
   LINK_COMPROVANTE?: string;
+  PAGADORIA_NOTA_VBS?: string;
   
   // Campos manuais - Financeiro
-  DATA_FATURAMENTO_NF_AGENCIA?: string;
+  DATA_FATURAMENTO_AGENCIA?: string;
   DATA_RECEBIMENTO_AGENCIA?: string;
   DATA_REPASSE_FORNECEDOR?: string;
   
