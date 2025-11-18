@@ -238,7 +238,7 @@ export default function App() {
               pedidos={filteredPedidos}
               onView={handleView}
               onEdit={handleEdit}
-              onUpdate={loadData}
+              onUpdate={loadPedidos}
             />
             <div className="mt-4 text-sm text-gray-600">
               Mostrando {filteredPedidos.length} de {pedidos.length} pedidos
