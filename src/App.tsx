@@ -50,11 +50,11 @@ export default function App() {
       // Filtro de busca
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = 
-        pedido.CLIENTE.toLowerCase().includes(searchLower) ||
-        pedido.CAMPANHA.toLowerCase().includes(searchLower) ||
-        pedido.ID_PI.toLowerCase().includes(searchLower) ||
-        pedido.NUMERO_PI.toLowerCase().includes(searchLower) ||
-        pedido.VEICULO.toLowerCase().includes(searchLower);
+        (pedido.CLIENTE || '').toLowerCase().includes(searchLower) ||
+        (pedido.CAMPANHA || '').toLowerCase().includes(searchLower) ||
+        (pedido.ID_PI || '').toLowerCase().includes(searchLower) ||
+        (pedido.NUMERO_PI?.toString() || '').toLowerCase().includes(searchLower) ||
+        (pedido.VEICULO || '').toLowerCase().includes(searchLower);
 
       // Filtro de status
       const matchesStatus = 
