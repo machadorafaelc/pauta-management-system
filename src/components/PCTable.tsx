@@ -108,10 +108,10 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
     <div className="rounded-lg border bg-white overflow-hidden relative">
       <DoubleScrollbar>
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b sticky top-0">
+          <thead className="bg-gray-50 border-b sticky top-0 z-20">
             <tr>
               {/* Ações */}
-              <th className="px-3 py-2 text-left sticky left-0 bg-gray-50 z-10 border-r">Ações</th>
+              <th className="px-3 py-2 text-left sticky left-0 bg-gray-50 z-30 border-r">Ações</th>
               
               {/* COLUNAS A-J: API VBS (AZUL - Somente Leitura) */}
               <th className="px-3 py-2 text-left bg-blue-100">Cliente</th>
@@ -147,7 +147,7 @@ export function PCTable({ pedidos, onView, onEdit, onUpdate }: PCTableProps) {
               return (
                 <tr key={pedido.ID_PC} className="border-b hover:bg-gray-50 transition-colors">
                   {/* Ações */}
-                  <td className="px-3 py-2 sticky left-0 bg-white z-10 border-r">
+                  <td className="px-3 py-2 sticky left-0 bg-white z-10 border-r shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                     {isEditing ? (
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" onClick={saveEditing}>
