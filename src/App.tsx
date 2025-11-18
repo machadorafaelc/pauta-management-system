@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { PedidoInsercao } from "./types/pauta";
+import { PedidoCompra } from "./types/pc";
 import { pautaService } from "./services/pautaService";
+import { pcService } from "./services/pcService";
 import { PautaTable } from "./components/PautaTable";
 import { PautaFilters } from "./components/PautaFilters";
 import { PautaDetailsDialog } from "./components/PautaDetailsDialog";
@@ -13,8 +15,12 @@ import { PautaNewDialog } from "./components/PautaNewDialog";
 import { PautaImportDialog } from "./components/PautaImportDialog";
 import { toast } from "sonner";
 
+type ViewMode = 'pi' | 'pc';
+
 export default function App() {
+  const [viewMode, setViewMode] = useState<ViewMode>('pi');
   const [pedidos, setPedidos] = useState<PedidoInsercao[]>([]);
+  const [pcs, setPcs] = useState<PedidoCompra[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -30,6 +36,7 @@ export default function App() {
   // Carregar dados do Supabase
   useEffect(() => {
     loadPedidos();
+    loadPCs();
   }, []);
 
   const loadPedidos = async () => {
@@ -45,8 +52,21 @@ export default function App() {
     }
   };
 
+  const loadPCs = async () => {
+    try {
+      const data = await pcService.getAll();
+      setPcs(data);
+    } catch (error) {
+      console.error('Erro ao carregar PCs:', error);
+      toast.error('Erro ao carregar PCs');
+    }
+  };
+
+  // Dados filtrados conforme o modo
+  const currentData = viewMode === 'pi' ? pedidos : pcs as any[];
+
   const filteredPedidos = useMemo(() => {
-    return pedidos.filter((pedido) => {
+    return currentData.filter((pedido: any) => {
       // Filtro de busca
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = 
@@ -70,7 +90,7 @@ export default function App() {
 
       return matchesSearch && matchesStatus && matchesResponsavel && matchesFaturamento;
     });
-  }, [pedidos, searchTerm, statusFilter, responsavelFilter, faturamentoFilter]);
+  }, [currentData, searchTerm, statusFilter, responsavelFilter, faturamentoFilter, viewMode]);
 
   const handleView = (pedido: PedidoInsercao) => {
     setSelectedPedido(pedido);
@@ -136,8 +156,24 @@ export default function App() {
             <div>
               <h1 className="text-gray-900 mb-2">Gestão de Pauta</h1>
               <p className="text-gray-600">
-                Sistema de controle de Pedidos de Inserção (PIs) - Mídia, Produção e Checking
+                Sistema de controle de Pedidos de Inserção (PIs) e Pedidos de Compra (PCs)
               </p>
+              <div className="flex gap-2 mt-3">
+                <Button
+                  variant={viewMode === 'pi' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('pi')}
+                >
+                  📋 PIs - Mídia ({pedidos.length})
+                </Button>
+                <Button
+                  variant={viewMode === 'pc' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('pc')}
+                >
+                  🛒 PCs - Produção ({pcs.length})
+                </Button>
+              </div>
             </div>
             <div className="flex gap-3">
               <Button variant="outline" onClick={() => setIsImportDialogOpen(true)}>
